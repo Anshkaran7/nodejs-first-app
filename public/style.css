@@ -62,5 +62,13 @@ h1{
     display: flex;
     align-self: center;
     font-size: 25px;
+    
     color: rgb(4, 84, 149);
+}
+.success{
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
 }
