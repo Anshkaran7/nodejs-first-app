@@ -19,7 +19,7 @@ const messageSchema = new mongoose.Schema({
 const Messages = mongoose.model("Message", messageSchema);
 
 const app = express();
-const users = [];
+// const users = [];
 
 //using middlewares
 app.use(express.static(path.join(path.resolve(), "public")));
