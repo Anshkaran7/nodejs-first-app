@@ -4,7 +4,7 @@ const { default: mongoose, Mongoose, mongo } = require("mongoose");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
-
+const bcrypt = require("bcrypt")
 mongoose
   .connect("mongodb://127.0.0.1:27017", {
     dbName: "Backend",
@@ -19,7 +19,7 @@ mongoose
 // });
 
 const UserSchema = new mongoose.Schema({
-  name:String,
+  name: String,
   email: String,
   password: String,
 });
@@ -65,17 +65,50 @@ const IsAuthenticate = async (req, res, next) => {
     res.redirect("/login");
   }
 };
+
 app.get("/", IsAuthenticate, (req, res) => {
   res.render("logout", { name: req.user.name });
 });
 
-app.get("/login", (req, res) => {
-  res.render("login");
-});
+app.get("/login",(req,res)=>{
+  res.render("login")
+})
+
+app.get("/register",(req,res)=>{
+  res.render("register")
+})
 
 app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+ let user = await User.findOne({ email });
+
+  if (!user) return res.redirect("/register");
+  
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    return res.render("login", { email, message: "Incorrect Password" });
+  }
+  const token = jwt.sign({ _id: user._id }, "adfghjkl");
+  res.cookie("token", token, {
+    httpOnly: true,
+    expires: new Date(Date.now() + 60 * 1000),
+  });
+  res.redirect("/");
+});
+
+app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
-  const user = await User.create({ name, email, password });
+
+  let user = await User.findOne({ email });
+
+  if (user) return res.redirect("/login");
+  
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  user = await User.create({ name, email, password:hashedPassword });
+
   const token = jwt.sign({ _id: user._id }, "adfghjkl");
   res.cookie("token", token, {
     httpOnly: true,

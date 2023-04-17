@@ -96,3 +96,10 @@ img {
   flex-direction: column;
 }
 
+.error {
+  color: red;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: right;
+  margin-right: 2rem;
+}
